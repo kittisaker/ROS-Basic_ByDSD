@@ -1,28 +1,57 @@
 #! /usr/bin/env python3
-
 from tkinter import*
 import rospy
-from std_msgs.msg import Int16
+from geometry_msgs.msg import Twist
 
-rospy.init_node("REMOTE")
-pub = rospy.Publisher("BOX", Int16, queue_size=10)
 
-def send():
-    pub.publish(999)
+frame = Tk()
+frame.title("REMOTE")
+frame.geometry("200x200")
 
-window = Tk()
-window.geometry("200x200")
 
-B1 = Button(window, text="FW", command = send)
-B1.place(x=80, y=25)
+rospy.init_node("GUI_Remote")
+pub = rospy.Publisher("turtle1/cmd_vel",Twist, queue_size=10)
 
-B2 = Button(window, text="LT")
-B2.place(x=20, y=90)
 
-B3 = Button(window, text="RT")
-B3.place(x=140, y=90)
+def fw():
+    print("fw")
+    cmd = Twist()
+    cmd.linear.x = 1.0
+    cmd.angular.z=0.0
+    pub.publish(cmd)
 
-B4 = Button(window, text="BW")
-B4.place(x=80, y=150)
+def bw():
+    print("bw")
+    cmd = Twist()
+    cmd.linear.x = -1.0
+    cmd.angular.z=0.0
+    pub.publish(cmd)
 
-window.mainloop()
+def lt():
+    print("lt")
+    cmd = Twist()
+    cmd.linear.x = 1.0
+    cmd.angular.z= 1.0
+    pub.publish(cmd)
+
+def rt():
+    print("rt")
+    cmd = Twist()
+    cmd.linear.x = 1.0
+    cmd.angular.z= -1.0
+    pub.publish(cmd)
+
+
+B1 = Button(text = "FW", command=fw)
+B1.place(x=73, y=20)
+
+B2 = Button(text = "BW", command=bw)
+B2.place(x=73, y=130)
+
+B3 = Button(text = "LT", command=lt)
+B3.place(x=20, y=80)
+
+B4 = Button(text = "RT", command=rt)
+B4.place(x=128, y=80)
+
+frame.mainloop()

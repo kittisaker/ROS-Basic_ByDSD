@@ -96,7 +96,7 @@ rostopic echo /BOX
 ## Tk with turtle
 
 ```python
-#!/usr/bin/env python3
+#! /usr/bin/env python3
 from tkinter import*
 import rospy
 from geometry_msgs.msg import Twist
@@ -154,3 +154,27 @@ B4.place(x=128, y=80)
 
 frame.mainloop()
 ```
+
+
+## ROS with Arduino nano
+
+### Install Arudino IDE
+
+
+### Install Driver
+
+```shell
+mkdir CH340_Soruce
+cd CH340_Soruce/
+git clone http://github.com/juliagoda/CH341SER.git
+
+cd CH341SER/
+make clean
+make
+
+sudo make load
+sudo rmmod ch341
+lsmod | grep ch34
+dmesg
+```
+
