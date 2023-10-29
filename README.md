@@ -265,4 +265,188 @@ S4.set(90)
 frame.mainloop()
 ```
 
+## ROS and Arduino read Switch
+
+```cpp
+#include <ros.h>
+#include <std_msgs/Int16.h>
+
+ros::NodeHandle nh; 
+std_msgs::Int16 sensorData;
+ros::Publisher pub("Topic_Sensor", &sensorData);
+
+void setup(){
+   pinMode(3,INPUT);
+   nh.initNode();
+   nh.advertise(pub);
+}
+ 
+void loop(){
+    sensorData.data = digitalRead(3);
+    pub.publish(&sensorData);
+    nh.spinOnce();
+    delay(10);
+}
+```
+
+```shell
+roscore
+```
+
+```shell
+rosrun rosserial_python serial_node.py /dev/ttyUSB0
+```
+
+```shell
+rostopic echo /Topic_Sensor
+```
+
+## 
+
+```python
+#!/usr/bin/env python3
+from tkinter import*
+import rospy
+from std_msgs.msg import Int16
+
+frame=Tk()
+frame.geometry("200x200")
+L1= Label(frame,font=('Arial',40), text = "0")
+L1.pack()
+
+rospy.init_node('GUI')
+rate = rospy.Rate(10) 
+rate.sleep()
+
+def read(num):
+    sensor_read = num.data
+    L1.config(text=str(sensor_read))
+
+sub = rospy.Subscriber('Topic_Sensor', Int16, callback= read)
+
+frame.mainloop()
+```
+
+```shell
+rosrun my_project ROS_GUI_Read_Sensor.py
+```
+
+
+```python
+#!/usr/bin/env python3
+from tkinter import*
+import rospy
+from std_msgs.msg import Int16
+
+frame=Tk()
+frame.geometry("200x200")
+L1= Label(frame,font=('Arial',40), text = "0")
+L1.pack()
+
+rospy.init_node('GUI')
+rate = rospy.Rate(10) 
+rate.sleep()
+
+def read(num):
+    if num.data == 1:
+        sensor_read = "Press"
+    else :
+        sensor_read = "Release"
+
+    L1.config(text=str(sensor_read))
+
+sub = rospy.Subscriber('Topic_Sensor', Int16, callback= read)
+
+frame.mainloop()
+```
+
+##
+
+```cpp
+#include <Servo.h> 
+#include <ros.h>
+#include <std_msgs/Int16.h>
+ 
+ros::NodeHandle  nh;
+std_msgs::Int16 sensorData;
+ros::Publisher pub("Topic_Sensor", &sensorData);
+
+ 
+Servo servo_9;
+Servo servo_10;
+Servo servo_11;
+Servo servo_12;
+
+void s_9( const std_msgs::Int16& cmd_msg){
+  servo_9.write(cmd_msg.data); 
+}
+ 
+void s_10( const std_msgs::Int16& cmd_msg){
+  servo_10.write(cmd_msg.data); 
+}
+
+void s_11( const std_msgs::Int16& cmd_msg){
+  servo_11.write(cmd_msg.data); 
+}
+
+void s_12( const std_msgs::Int16& cmd_msg){
+  servo_12.write(cmd_msg.data); 
+}
+ 
+ros::Subscriber<std_msgs::Int16> sub_1("Topic_servo_9", s_9);
+ros::Subscriber<std_msgs::Int16> sub_2("Topic_servo_10", s_10);
+ros::Subscriber<std_msgs::Int16> sub_3("Topic_servo_11", s_11);
+ros::Subscriber<std_msgs::Int16> sub_4("Topic_servo_12", s_12);
+
+void setup(){
+  servo_9.attach(9); 
+  servo_10.attach(10);
+  servo_11.attach(11);
+  servo_12.attach(12);
+  nh.initNode();
+  nh.subscribe(sub_1);
+  nh.subscribe(sub_2);
+  nh.subscribe(sub_3);
+  nh.subscribe(sub_4);
+  pinMode(3,INPUT);
+  nh.advertise(pub);
+}
+ 
+void loop(){
+  sensorData.data = digitalRead(3);
+  pub.publish(&sensorData);
+  nh.spinOnce();
+  delay(10);
+}
+```
+
+```python
+#! /usr/bin/env python3
+import rospy
+from std_msgs.msg import Int16
+import time
+
+pub9 = rospy.Publisher("/Topic_servo_9", Int16, queue_size=10)
+pub10 = rospy.Publisher("/Topic_servo_10", Int16, queue_size=10)
+pub11 = rospy.Publisher("/Topic_servo_11", Int16, queue_size=10)
+pub12 = rospy.Publisher("/Topic_servo_12", Int16, queue_size=10)
+
+rospy.init_node("reset")
+rospy.loginfo("Start Node --- reset")
+rate = rospy.Rate(10)
+
+def cmd(val):
+    if val.data == 1:
+        rospy.loginfo("Presssss")
+        pub9.publish(90)
+        pub10.publish(90)
+        pub11.publish(90)
+        pub12.publish(90)
+    else:
+        pass
+
+sub = rospy.Subscriber("/Topic_Sensor", Int16, callback=cmd)
+rospy.spin()
+```
+
 ---
