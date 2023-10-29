@@ -301,7 +301,7 @@ void loop(){
 ```
 
 ```shell
-rosrun
+roscore
 ```
 
 ```shell
@@ -348,7 +348,7 @@ frame.mainloop()
 ```
 
 ```shell
-rosrun my_project scale-test.py 
+rosrun my_project ROS_GUI_2-Scale.py
 ```
 
-##
+---
